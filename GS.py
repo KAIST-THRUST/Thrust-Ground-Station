@@ -2,10 +2,22 @@ from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
 
+from threading import Thread
+from serial.tools import list_ports
+import serial
+from time import sleep
+
 from matplotlib import animation
 
 from Gyro import Gyro_graph, Gyro_3D
-                                                                                                                                                                                                                                                                                                                             
+from Helper import Status
+                             
+ports = list_ports.comports()
+for port in ports:
+    print(port)
+
+ser = serial.Serial('COM9',9600)
+                                                                                                                                                                                                                                                                                       
 # make program with tkinter
 root = Tk()
 root.title("THRUST-Ground Station") # set title
@@ -41,9 +53,26 @@ Pitch_anim = animation.FuncAnimation(Pitch.fig, Pitch.animate, fargs= [YPR,],ini
 Roll = Gyro_graph(frame2, "Roll")
 Roll_anim = animation.FuncAnimation(Roll.fig, Roll.animate, fargs= [YPR,],init_func= Roll.init_line ,frames=200, interval=50, blit=False)
 
+### Status ###
+Connect_Serial = Status(frame1)
 
 root.grid_rowconfigure(3, weight=1)
 root.grid_columnconfigure(3, weight=1)
 
+def loop():
+    #while True:
+    data1 = ser.readline() 
+    #data2 = data1.split(b'\\') 
+    #data.append(data)
+    data = data1.decode('utf-8')
+    print(data)
+        #YPR = [0,0,0]
+    root.after(100,loop)
+
 if __name__ == '__main__': # start program
+    root.after(100,loop)
+    #thread = Thread(target=loop)
+    #thread.start()
     root.mainloop() 
+    
+    

@@ -147,7 +147,7 @@ class Gyro_graph:
         
     def animate(self,i,data):
         y = data[self.num]
-        self.var.configure(text=data[self.num])
+        self.var.configure(text="{:.2f}".format(data[self.num]))
         
         old_y = self.line.get_ydata()
         new_y = np.r_[old_y[1:], y]
