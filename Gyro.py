@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pyquaternion import Quaternion
 
+
 class Gyro_3D:
     def __init__(self, master):
         
@@ -19,7 +20,6 @@ class Gyro_3D:
 
         # use a different color for each axis
         colors = ['r', 'g', 'b']
-
         # set up lines and points
         self.lines = sum([ax.plot([], [], [], c=c)
                     for c in colors], [])
@@ -87,9 +87,11 @@ class Gyro_3D:
         
         #q = Quaternion(axis=[0.0,0.0,1.0], radians=0.1*data[0]*np.pi)
         
+
         data[0] += 0.01*np.pi
         data[1] = 0 #0.01*np.pi #np.random.uniform(0,2)*np.pi
         data[2] = np.pi#np.random.uniform(0,2)*np.pi
+        
         q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
         
         

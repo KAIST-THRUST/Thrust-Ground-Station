@@ -19,8 +19,8 @@ while True:
     data1 = ser.readline() 
     #data2 = data1.split(b'\\') 
     #data.append(data)
-    data = data1.decode('utf-8')
-    print(data)
+    #data = data1.decode('utf-8')
+    print(data1)
     
     if len(data) > 1000:
         break
