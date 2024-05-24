@@ -15,7 +15,16 @@ void loop(){
     }
 
     while(HC12.available()){
-        Serial.println(HC12.read());
+        float sensorData1 = HC12.parseFloat();
+        float sensorData2 = HC12.parseFloat();
+        float sensorData3 = HC12.parseFloat();
+        
+        Serial.print(sensorData1);
+        Serial.print(",");
+        Serial.print(sensorData2);
+        Serial.print(",");
+        Serial.println(sensorData3);  
+        //Serial.println(HC12.read());
     }
     delay(1000);
 }

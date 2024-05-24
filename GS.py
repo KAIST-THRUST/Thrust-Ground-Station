@@ -7,6 +7,8 @@ from serial.tools import list_ports
 import serial
 import numpy as np
 import matplotlib.pyplot as plt
+from time import ctime 
+from time import time
 from time import sleep
 
 from matplotlib import animation
@@ -97,14 +99,17 @@ class Gyro_3D:
         
         #q = Quaternion(axis=[0.0,0.0,1.0], radians=0.1*data[0]*np.pi)
         
-        print("here : :: ", YPR)
+        #print("here : :: ", YPR)
+        #print(ctime(time()))
         #data[0] += 0.01*np.pi
         #data[1] = 0 #0.01*np.pi #np.random.uniform(0,2)*np.pi
         #data[2] = np.pi#np.random.uniform(0,2)*np.pi
-        data[0] = YPR[0]
-        data[1] = YPR[1]
-        data[2] = YPR[2]
-        q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
+        #data[0] = (YPR[0] / 360) * 2 * np.pi 
+        #data[1] = (YPR[1] / 360) * 2 * np.pi 
+        #data[2] = (YPR[2] / 360) * 2 * np.pi 
+        #print(len(self.get_quaternion_from_euler(data[0],data[1],data[2])))
+        print(YPR)
+        q = Quaternion(array=YPR)
         
         
         #data[0]+=1
@@ -131,7 +136,7 @@ for port in ports:
     print(port)
 
 ser = serial.Serial('COM9',9600)
-YPR = [0,0,0] # Yaw, Pitch, Roll data                                                                                                                                                                                                                                                                             
+YPR = [0,0,0,0] # Yaw, Pitch, Roll data                                                                                                                                                                                                                                                                             
 # make program with tkinter
 root = Tk()
 root.title("THRUST-Ground Station") # set title
@@ -152,19 +157,19 @@ frame3.grid(row=0,column=2,sticky= "nse")
 
 
 gyro3D = Gyro_3D(frame1)
-gyro3D_anim = animation.FuncAnimation(gyro3D.fig, gyro3D.animate, fargs=[YPR,], init_func=gyro3D.init, frames=500, interval=30, blit=False)
+gyro3D_anim = animation.FuncAnimation(gyro3D.fig, gyro3D.animate, fargs=[YPR,], init_func=gyro3D.init, frames=100, interval=30, blit=False)
 
 ### Yaw ###
-Yaw = Gyro_graph(frame2, "Yaw")
-Yaw_anim = animation.FuncAnimation(Yaw.fig, Yaw.animate, fargs= [YPR,],init_func= Yaw.init_line ,frames=200, interval=50, blit=False)
+#Yaw = Gyro_graph(frame2, "Yaw")
+#Yaw_anim = animation.FuncAnimation(Yaw.fig, Yaw.animate, fargs= [YPR,],init_func= Yaw.init_line ,frames=100, interval=50, blit=False)
 
 ### Pitch ###
-Pitch = Gyro_graph(frame2, "Pitch")
-Pitch_anim = animation.FuncAnimation(Pitch.fig, Pitch.animate, fargs= [YPR,],init_func= Pitch.init_line ,frames=200, interval=50, blit=False)
+#Pitch = Gyro_graph(frame2, "Pitch")
+#Pitch_anim = animation.FuncAnimation(Pitch.fig, Pitch.animate, fargs= [YPR,],init_func= Pitch.init_line ,frames=100, interval=50, blit=False)
 
 ### Roll ###
-Roll = Gyro_graph(frame2, "Roll")
-Roll_anim = animation.FuncAnimation(Roll.fig, Roll.animate, fargs= [YPR,],init_func= Roll.init_line ,frames=200, interval=50, blit=False)
+#Roll = Gyro_graph(frame2, "Roll")
+#Roll_anim = animation.FuncAnimation(Roll.fig, Roll.animate, fargs= [YPR,],init_func= Roll.init_line ,frames=100, interval=50, blit=False)
 
 ### Status ###
 Connect_Serial = Status(frame1)
@@ -178,17 +183,18 @@ def loop():
     #data2 = data1.split(b'\\') 
     #data.append(data)
     data = data1.decode('utf-8').split(',')
-    if (len(data) == 3):
-        data[2] = data[2][:-2]
+    #print(data)
+    if (len(data) == 4):
+        data[3] = data[3][:-2]
         global YPR
-        YPR = [float(data[0]),float(data[1]),float(data[2])]
+        YPR = [float(data[0]),float(data[1]),float(data[2]), float(data[3])]
         #print(YPR)
         #Roll_anim = animation.FuncAnimation(Roll.fig, Roll.animate, fargs= [YPR,],init_func= Roll.init_line ,frames=200, interval=50, blit=False)
         
-    root.after(100,loop)
+    root.after(80,loop)
 
 if __name__ == '__main__': # start program
-    val = root.after(100,loop)
+    val = root.after(80,loop)
     #thread = Thread(target=loop)
     #thread.start()
     #print(YPR)
