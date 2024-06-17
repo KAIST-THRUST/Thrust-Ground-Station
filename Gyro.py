@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pyquaternion import Quaternion
 
-
 class Gyro_3D:
     def __init__(self, master):
         
@@ -18,6 +17,7 @@ class Gyro_3D:
         ax.set_zlabel('Z')
         #ax.axis('off')
 
+        self.YPR = [0,0,0,0]
         # use a different color for each axis
         colors = ['r', 'g', 'b']
         # set up lines and points
@@ -79,7 +79,7 @@ class Gyro_3D:
         return [qx, qy, qz, qw]
     
     ### animation function ###
-    def animate(self, i,data):
+    def animate(self, i):
         # we'll step two time-steps per frame.  This leads to nice results.
         #i = (2 * i) % x_t.shape[1]
         
@@ -87,16 +87,21 @@ class Gyro_3D:
         
         #q = Quaternion(axis=[0.0,0.0,1.0], radians=0.1*data[0]*np.pi)
         
-
-        data[0] += 0.01*np.pi
-        data[1] = 0 #0.01*np.pi #np.random.uniform(0,2)*np.pi
-        data[2] = np.pi#np.random.uniform(0,2)*np.pi
-        
-        q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
+        #print("here : :: ", YPR)
+        #print(ctime(time()))
+        #data[0] += 0.01*np.pi
+        #data[1] = 0 #0.01*np.pi #np.random.uniform(0,2)*np.pi
+        #data[2] = np.pi#np.random.uniform(0,2)*np.pi
+        data = self.YPR
+        #data[0] = (YPR[0] / 360) * 2 * np.pi 
+        #data[1] = (YPR[1] / 360) * 2 * np.pi 
+        #data[2] = (YPR[2] / 360) * 2 * np.pi 
+        #print(len(self.get_quaternion_from_euler(data[0],data[1],data[2])))
+        #q = Quaternion(array=YPR)
         
         
         #data[0]+=1
-        #q = Quaternion(array=get_quaternion_from_euler(data[0],data[1],data[2]))
+        q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
         
         for line, start, end in zip(self.lines, self.startpoints, self.endpoints):
             #end *= 5
@@ -113,22 +118,19 @@ class Gyro_3D:
         #ax.view_init(30, 0.6 * i)
         #fig.canvas.draw()
         return self.lines
-    
+
 class Gyro_graph:
     def __init__(self, master, mode):
         self.mode = mode
-        
+        self.data = 0
         if self.mode == "Yaw":
             row = 1
-            self.num = 0
             color = "blue"
         elif self.mode == "Pitch":
             row = 3
-            self.num = 1
             color = "green"
         elif self.mode == "Roll":
             row = 5
-            self.num=2
             color = "red"
             
         state = Label(master, text = str(mode) + " : ", borderwidth=4, foreground =color, font = ("Arial", 15))
@@ -147,9 +149,9 @@ class Gyro_graph:
     def init_line(self):
         return self.line
         
-    def animate(self,i,data):
-        y = data[self.num]
-        self.var.configure(text="{:.2f}".format(data[self.num]))
+    def animate(self,i):
+        y = self.data
+        self.var.configure(text="{:.2f}".format(self.data))
         
         old_y = self.line.get_ydata()
         new_y = np.r_[old_y[1:], y]
