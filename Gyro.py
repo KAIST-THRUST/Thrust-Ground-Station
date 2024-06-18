@@ -10,7 +10,7 @@ class Gyro_3D:
     def __init__(self, master):
         
         # Set up figure & 3D axis for animation
-        self.fig = plt.figure(figsize=(4,4))
+        self.fig = plt.figure(figsize=(3,3))
         ax = self.fig.add_axes([0, 0, 1, 1], projection='3d')
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -35,8 +35,8 @@ class Gyro_3D:
         # set point-of-view: specified by (altitude degrees, azimuth degrees)
         ax.view_init(20, 45)
 
-        canvas = FigureCanvasTkAgg(self.fig, master=master)
-        canvas.get_tk_widget().grid(row=0, column=0)
+        #canvas = FigureCanvasTkAgg(self.fig, master=master)
+        #canvas.get_tk_widget().grid(row=1, column=0)
 
         return
     
@@ -119,42 +119,3 @@ class Gyro_3D:
         #fig.canvas.draw()
         return self.lines
 
-class Gyro_graph:
-    def __init__(self, master, mode):
-        self.mode = mode
-        self.data = 0
-        if self.mode == "Yaw":
-            row = 1
-            color = "blue"
-        elif self.mode == "Pitch":
-            row = 3
-            color = "green"
-        elif self.mode == "Roll":
-            row = 5
-            color = "red"
-            
-        state = Label(master, text = str(mode) + " : ", borderwidth=4, foreground =color, font = ("Arial", 15))
-        state.grid(row=row,column=0,sticky="w")
-        
-        self.var = Label(master, text = "0", borderwidth=4, font = ("Arial", 15))
-        self.var.grid(row=row,column=0,sticky="e")
-
-        self.fig = plt.figure(figsize=(3,2))
-        ax = plt.subplot(111, xlim=(0, 50), ylim=(0, 2*np.pi))
-        self.line, = ax.plot(np.arange(50), np.ones(50, dtype=np.float)*np.nan, lw=1, c=color,ms=1)
-
-        canvas = FigureCanvasTkAgg(self.fig, master=master)
-        canvas.get_tk_widget().grid(row=row+1, column=0)
-    
-    def init_line(self):
-        return self.line
-        
-    def animate(self,i):
-        y = self.data
-        self.var.configure(text="{:.2f}".format(self.data))
-        
-        old_y = self.line.get_ydata()
-        new_y = np.r_[old_y[1:], y]
-        self.line.set_ydata(new_y)
-        return self.line,
-    
