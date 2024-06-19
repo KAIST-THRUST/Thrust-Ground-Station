@@ -17,7 +17,7 @@ class Gyro_3D:
         ax.set_zlabel('Z')
         #ax.axis('off')
 
-        self.YPR = [0,0,0,0]
+        self.Quat = [0,0,0,0]
         # use a different color for each axis
         colors = ['r', 'g', 'b']
         # set up lines and points
@@ -87,20 +87,23 @@ class Gyro_3D:
         
         #q = Quaternion(axis=[0.0,0.0,1.0], radians=0.1*data[0]*np.pi)
         
-        #print("here : :: ", YPR)
+        #print("here : :: ", Quat)
         #print(ctime(time()))
         #data[0] += 0.01*np.pi
         #data[1] = 0 #0.01*np.pi #np.random.uniform(0,2)*np.pi
         #data[2] = np.pi#np.random.uniform(0,2)*np.pi
-        data = self.YPR
-        #data[0] = (YPR[0] / 360) * 2 * np.pi 
-        #data[1] = (YPR[1] / 360) * 2 * np.pi 
-        #data[2] = (YPR[2] / 360) * 2 * np.pi 
+        
+        
+        
         #print(len(self.get_quaternion_from_euler(data[0],data[1],data[2])))
-        #q = Quaternion(array=YPR)
+        
+        data = self.Quat
+        #q = Quaternion(array=data)
         
         
-        #data[0]+=1
+        #data[0] = (data[0] / 360) * 2 * np.pi 
+        #data[1] = (data[1] / 360) * 2 * np.pi 
+        #data[2] = (data[2] / 360) * 2 * np.pi 
         q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
         
         for line, start, end in zip(self.lines, self.startpoints, self.endpoints):

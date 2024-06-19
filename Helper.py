@@ -46,16 +46,65 @@ class graph_2D:
         self.line.set_ydata(new_y)
         return self.line,
     
+class Gps_Graph_3D:
+    def __init__(self, master, location, color, mode=False):
+        self.mode = mode
+        self.data = 0
+        (row,column) = location
+        self.color = color
+            
+        state = Label(master, text = str(mode) + " : ", borderwidth=4, foreground =color, font = ("Arial", 15))
+        state.grid(row=row,column=0,sticky="w")
+    
+        self.var = Label(master, text = "0", borderwidth=4, font = ("Arial", 15))
+        self.var.grid(row=row,column=0,sticky="e")
+
+        self.fig = plt.figure(figsize=(3,3))
+
+        #self.ax = plt.subplot(111, xlim=(0, xlimit), ylim=(0, ylimit))
+        self.ax = self.fig.add_axes([0, 0, 1, 1], projection='3d')
+        self.ax.set_xlim((-50, 50))
+        self.ax.set_ylim((-50, 50))
+        self.ax.set_zlim((0, 200))
+        self.ax.view_init(20, 45)
+        
+        self.line, = self.ax.plot(np.arange(50), np.ones(50, dtype=np.float)*np.nan, lw=1, c=color,ms=1)
+
+        canvas = FigureCanvasTkAgg(self.fig, master=master)
+        canvas.get_tk_widget().grid(row=row+1, column=0)
+    
+    def init_line(self):
+        return self.line
+        
+    def animate(self,i):
+        y = self.data
+        self.var.configure(text="{:.2f}".format(self.data))
+        
+        old_y = self.line.get_ydata()
+        new_y = np.r_[old_y[1:], y]
+        self.line.set_ydata(new_y)
+        return self.line,
+    
+    
 class Var:
     def __init__(self, root, location, name = 'Var', color='black'):
         (row,column) = location
-        state = Label(root, text = str(name) + " : ", borderwidth=4, foreground = color, font = ("Arial", 15))
-        state.grid(row=row,column=column,sticky="w")
+        val_frame = tk.Frame(root)
         
-        self.var = Label(root, text = "0", borderwidth=4, font = ("Arial", 15))
-        self.var.grid(row=row,column=column,sticky="e")
+        self.data = 0.00
+        
+        state = Label(val_frame, text = str(name) + " : ", borderwidth=4, foreground = color, font = ("Arial", 15))
+        state.grid(row=0,column=0,sticky="w")
+        
+        self.var = Label(val_frame, text = self.data, borderwidth=4, foreground = color, font = ("Arial", 15))
+        self.var.grid(row=0,column=1,sticky="e")
+        
+        val_frame.grid(row=row,column=column, sticky="news")
+        
+        val_frame.columnconfigure(0,weight=1)
+        val_frame.columnconfigure(1,weight=1)
     
-    def update(self, i):
+    def update(self):
         self.var.configure(text="{:.2f}".format(self.data))
     
 class Status:

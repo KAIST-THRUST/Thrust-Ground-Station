@@ -19,6 +19,7 @@ from Gyro import Gyro_3D
 from Time_Graph import Time_Graph
 from Helper import Status
 from Helper import Var
+from Helper import Gps_Graph_3D
 from Helper import graph_2D
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -93,7 +94,7 @@ frame2.rowconfigure(7, weight=1)
 
 
 ### frame 3 ###
-# Gyro, 
+# Gyro, Pressure
 #-------------#
 
 frame3 = tk.Frame(root, relief="solid",bd = 3)
@@ -108,25 +109,56 @@ gyro_label.grid(row=0,column=0,sticky='w')
 
 gyro3D = Gyro_3D(frame3)
 gyro3D_canvas = FigureCanvasTkAgg(gyro3D.fig, master=frame3)
-gyro3D_canvas.get_tk_widget().grid(row=1, column=0, rowspan=3, sticky='w')
+gyro3D_canvas.get_tk_widget().grid(row=1, column=0, rowspan=2, sticky='w')
 gyro3D_anim = animation.FuncAnimation(gyro3D.fig, gyro3D.animate, init_func=gyro3D.init, frames=100, interval=30, blit=False)
 
-#Yaw_label=Label(frame3, text="Yaw ", borderwidth=2, font = ("Arial", 15))
-#Yaw_label.grid(row=1,column=1,sticky='w')
-Yaw_var = Var(frame3,(1,1),'Yaw','red')
+# Quaternion
+quat_var = tk.Frame(frame3)
+quat_var.grid(row=1,column=1, sticky='nw')
+quat_label=Label(quat_var, text=" Quaternion ", borderwidth=2, font = ("Arial", 15))
+quat_label.grid(row=0,column=0,sticky='news')
+x_var = Var(quat_var,(1,0),'X','blue')
+y_var = Var(quat_var,(2,0),'Y','green')
+z_var = Var(quat_var,(3,0),'Z','red')
 
-Pitch_label=Label(frame3, text="Pitch ", borderwidth=2, font = ("Arial", 15))
-Pitch_label.grid(row=2,column=1,sticky='w')
+# Euler
+YPR_var = tk.Frame(frame3)
+YPR_var.grid(row=2,column=1, sticky='nw')
+YPR_label=Label(YPR_var, text=" Euler ", font = ("Arial", 15))
+YPR_label.grid(row=0,column=0,sticky='news')
 
-Roll_label=Label(frame3, text="Roll ", borderwidth=2, font = ("Arial", 15))
-Roll_label.grid(row=3,column=1,sticky='w')
+Yaw_var = Var(YPR_var, (1,0),'Yaw','blue')
+Pitch_var = Var(YPR_var, (2,0),'Pitch','green')
+Roll_var = Var(YPR_var, (3,0),'Roll','red')
 
-#-------------#
+# Pressure
+Pressure = Time_Graph(frame3, (4,0), (50,100), "black", "Pressure")
+Pressure_anim = animation.FuncAnimation(Pressure.fig, Pressure.animate, init_func= Pressure.init_line ,frames=100, interval=50, blit=False)
+
+Temp_var = Var(frame3, (6,0),'Temperature','black')
+Time_var = Var(frame3, (7,0),'Time','black')
+
 ### frame 4 ###
+# Altitude, gps
 #-------------#
+
 
 frame4 = tk.Frame(root, relief="solid",bd = 3)
 frame4.grid(row=1, column=3, sticky='news')
+
+# 3D GPS
+#Gps = Gps_Graph(frame4, (0,0), "black", "Gps")
+#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
+
+#Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
+#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
+Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
+Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
+
+
+Altitude = Time_Graph(frame4, (2,0), (50,100), "black", "Altitude")
+Altitude_anim = animation.FuncAnimation(Altitude.fig, Altitude.animate, init_func= Altitude.init_line ,frames=100, interval=50, blit=False)
+
 
 ### Bottom frame ###
 
@@ -166,21 +198,28 @@ def loop():
     # [Yaw, Pitch, Roll, ?, Altitude, ]
     data = ['0.0','0.0','0.0','0.0','0.0'] # Fake data
     global cnt
-    
-    global gyro3D
-    global Yaw
-    global Alt
-    
-    cnt = cnt + 1 
+        
+    cnt = cnt + 1
     data_length = 5
     if (len(data) == data_length):
         ### Parser ###
         data[data_length-1] = data[data_length-1][:-2]
-        global YPR
-        YPR = [float(data[0])+(cnt*0.01*np.pi),float(data[1]),float(data[2]), float(data[3])]
-        gyro3D.YPR = YPR
-        #Yaw.data = float(data[0]) + (cnt*0.01*np.pi)
-        #Alt.data= float(data[4]) + cnt
+        
+        quaternion = [float(data[0]) + (cnt*0.01*np.pi),float(data[1]),float(data[2]), float(data[3])+cnt]
+        gyro3D.Quat = quaternion
+        
+        x_var.data = quaternion[0]
+        x_var.update()
+        y_var.data = quaternion[1]
+        y_var.update()
+        z_var.data = quaternion[2]
+        z_var.update()
+        
+        Pressure.data = cnt
+        Altitude.data= cnt
+        
+        if (cnt % 30 == 0):
+            Gps.ax.scatter(cnt*0.5,cnt*0.2,cnt,marker='o',color='0')
         
     
     root.after(80,loop)

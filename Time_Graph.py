@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Time_Graph:
-    def __init__(self, master, row, limit, color, mode=False):
+    def __init__(self, master, location, limit, color, mode=False):
         self.mode = mode
         self.data = 0
-        self.row = row
+        (row,column) = location
         self.color = color
             
         state = Label(master, text = str(mode) + " : ", borderwidth=4, foreground =color, font = ("Arial", 15))
