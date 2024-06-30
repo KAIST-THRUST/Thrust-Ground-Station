@@ -42,13 +42,12 @@ root.columnconfigure(1,weight=1)
 root.columnconfigure(3,weight=4)
 
 ### Top frame ###
-
 top_frame = tk.Frame(root, bg='gray', width = 1200, height=50)
 top_frame.grid(row=0, columnspan=4, sticky='news')
+#-------------#
 
 ### frame 1 ###
 # Rocket Image 
-#-------------#
 
 #frame1 = tk.Button(root,text = "1", bg= 'red')
 frame1 = tk.Frame(root, relief="solid", bd=3)
@@ -58,11 +57,10 @@ img = tk.PhotoImage(file=dirloc + "/Image/Rocket.png")
 
 rocket_img = tk.Label(frame1,image=img)
 rocket_img.pack()
-
-### frame 2 ###
-# Status
 #-------------#
 
+### frame 2 ###
+# Status frame
 frame2 = tk.Frame(root)
 frame2.grid(row=1,column=1, sticky='news')
 
@@ -71,32 +69,30 @@ frame2.columnconfigure(0,weight=1)
 Servo_stat = Status(frame2, (0,0), 'Servo')
 frame2.rowconfigure(0, weight=1)
 
-stat1 = Status(frame2, (1,0), 'Voltage')
+Voltage_stat = Status(frame2, (1,0), 'Voltage')
 frame2.rowconfigure(1, weight=1)
 
-stat1 = Status(frame2, (2,0), 'Transceiver')
+Transceiver_stat = Status(frame2, (2,0), 'Transceiver')
 frame2.rowconfigure(2, weight=1)
 
-stat1 = Status(frame2, (3,0), 'Gyro')
+Gyro_stat = Status(frame2, (3,0), 'Gyro')
 frame2.rowconfigure(3, weight=1)
 
-stat1 = Status(frame2, (4,0), 'GPS')
+GPS_stat = Status(frame2, (4,0), 'GPS')
 frame2.rowconfigure(4, weight=1)
 
-stat1 = Status(frame2, (5,0), 'Altitude')
+Altitude_stat = Status(frame2, (5,0), 'Altitude')
 frame2.rowconfigure(5, weight=1)
 
-stat1 = Status(frame2, (6,0), 'SD Card')
+SD_stat = Status(frame2, (6,0), 'SD Card')
 frame2.rowconfigure(6, weight=1)
 
-stat1 = Status(frame2, (7,0), 'Pressure')
+Pressure_stat = Status(frame2, (7,0), 'Pressure')
 frame2.rowconfigure(7, weight=1)
-
-
-### frame 3 ###
-# Gyro, Pressure
 #-------------#
 
+### frame 3 ###
+# Gyro, Pressure frame
 frame3 = tk.Frame(root, relief="solid",bd = 3)
 frame3.grid(row=1, column=2, sticky='news')
 
@@ -120,6 +116,7 @@ quat_label.grid(row=0,column=0,sticky='news')
 x_var = Var(quat_var,(1,0),'X','blue')
 y_var = Var(quat_var,(2,0),'Y','green')
 z_var = Var(quat_var,(3,0),'Z','red')
+w_var = Var(quat_var,(4,0),'W','black')
 
 # Euler
 YPR_var = tk.Frame(frame3)
@@ -137,12 +134,10 @@ Pressure_anim = animation.FuncAnimation(Pressure.fig, Pressure.animate, init_fun
 
 Temp_var = Var(frame3, (6,0),'Temperature','black')
 Time_var = Var(frame3, (7,0),'Time','black')
+#-------------#
 
 ### frame 4 ###
 # Altitude, gps
-#-------------#
-
-
 frame4 = tk.Frame(root, relief="solid",bd = 3)
 frame4.grid(row=1, column=3, sticky='news')
 
@@ -152,60 +147,41 @@ frame4.grid(row=1, column=3, sticky='news')
 
 #Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
 #Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
-Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
-Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
-
+#Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
+#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
 
 Altitude = Time_Graph(frame4, (2,0), (50,100), "black", "Altitude")
 Altitude_anim = animation.FuncAnimation(Altitude.fig, Altitude.animate, init_func= Altitude.init_line ,frames=100, interval=50, blit=False)
-
+#-------------#
 
 ### Bottom frame ###
-
 bottom_frame = tk.Frame(root, bg='gray', width = 1200, height=50, pady=3)
 bottom_frame.grid(row=2, columnspan=4, sticky='news')
-
-
-
-### Yaw ###
-#Yaw = Time_Graph(frame2, 1, (50,2*np.pi), "red", "Yaw")
-#Yaw_anim = animation.FuncAnimation(Yaw.fig, Yaw.animate, init_func= Yaw.init_line ,frames=100, interval=50, blit=False)
-
-### Pitch ###
-#Pitch = Gyro_graph(frame2, "Pitch")
-#Pitch_anim = animation.FuncAnimation(Pitch.fig, Pitch.animate, fargs= [YPR,],init_func= Pitch.init_line ,frames=100, interval=50, blit=False)
-
-### Roll ###
-#Roll = Gyro_graph(frame2, "Roll")
-#Roll_anim = animation.FuncAnimation(Roll.fig, Roll.animate, fargs= [YPR,],init_func= Roll.init_line ,frames=100, interval=50, blit=False)
-
-### Altitude ###
-#Alt = Time_Graph(frame2, 3, (50,100), "blue", "Altitude")
-#Alt_anim = animation.FuncAnimation(Alt.fig, Alt.animate, init_func= Alt.init_line ,frames=100, interval=50, blit=False)
-
-### Status ###
-#Connect_Serial = Status(frame1)
-
-#root.grid_rowconfigure(3, weight=1)
-#root.grid_columnconfigure(3, weight=1)
+#-------------#
 
 cnt = 0
+test = 0
 def loop():
     ### Read Data from Serial ###
     ### Serial Data : String, ex) "123.0,242.2,25.3"
     #raw_data = ser.readline() 
     #data = raw_data.decode('utf-8').split(',')
-    # [Yaw, Pitch, Roll, ?, Altitude, ]
-    data = ['0.0','0.0','0.0','0.0','0.0'] # Fake data
+    
+    # Test
+    data = ['0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0'] # Fake data
+    # [Transceiver, x, y, z, u, Yaw, Pitch, Roll, Altitude, Pressure, Temperature, Servo, Voltage, SD,GPS]
+    trans,x,y,z,u,yaw,pitch,roll,alt,p,temp,servo,volt,sd,gps = list(map(float, data))
+
     global cnt
-        
-    cnt = cnt + 1
-    data_length = 5
+    global test
+    cnt = cnt + 0.01*np.pi
+    data_length = 15
     if (len(data) == data_length):
         ### Parser ###
         data[data_length-1] = data[data_length-1][:-2]
+        quaternion = [x + cnt,y,z, u]
         
-        quaternion = [float(data[0]) + (cnt*0.01*np.pi),float(data[1]),float(data[2]), float(data[3])+cnt]
+        # Update Gyro 3D graph
         gyro3D.Quat = quaternion
         
         x_var.data = quaternion[0]
@@ -214,13 +190,39 @@ def loop():
         y_var.update()
         z_var.data = quaternion[2]
         z_var.update()
+        w_var.data = quaternion[3]
+        w_var.update()
         
-        Pressure.data = cnt
-        Altitude.data= cnt
+        Yaw_var.data = yaw
+        Yaw_var.update()
+        Pitch_var.data = pitch
+        Pitch_var.update()
+        Roll_var.data = roll
+        Roll_var.update()
+        
+        Pressure.data = p
+        Altitude.data = alt
+        
+        Temp_var.data = temp
+        Temp_var.update()
+        Time_var.data = cnt
+        Time_var.update()
         
         if (cnt % 30 == 0):
-            Gps.ax.scatter(cnt*0.5,cnt*0.2,cnt,marker='o',color='0')
-        
+            # Test variable 
+            # use this variable to test the status!
+            # Also You should remove this when you actually use it
+            test = (int(test)+1)%2
+            #Gps.ax.scatter(cnt*0.5,cnt*0.2,cnt,marker='o',color='0')
+            
+        Servo_stat.update(servo)
+        Voltage_stat.update(volt)
+        Transceiver_stat.update(trans)
+        Gyro_stat.update(yaw)
+        GPS_stat.update(gps)
+        Altitude_stat.update(alt)
+        SD_stat.update(sd)
+        Pressure_stat.update(p)
     
     root.after(80,loop)
 

@@ -85,7 +85,6 @@ class Gps_Graph_3D:
         self.line.set_ydata(new_y)
         return self.line,
     
-    
 class Var:
     def __init__(self, root, location, name = 'Var', color='black'):
         (row,column) = location
@@ -110,14 +109,34 @@ class Var:
 class Status:
     def __init__(self,  root, location, name = 'state'):
         (row,column) = location
-        status_frame = tk.Frame(root, relief="solid", bd=3)
+        self.name = name
+        self.prev_state = 0
+        self.status_frame = tk.Frame(root, relief="solid", bd=3)
         
-        txt1 = Label(status_frame, text = name, borderwidth=2, font = ("Arial", 15))
-        txt1.grid(row=0,column=0, sticky="w", padx=5, pady=5)
+        self.txt1 = Label(self.status_frame, text = self.name, borderwidth=2, font = ("Arial", 15))
+        self.txt1.grid(row=0,column=0, sticky="w", padx=5, pady=5)
         
-        stat1 = Label(status_frame, text = "Disconnected", borderwidth=2, background = "red", font = ("Arial", 15))
-        stat1.grid(row=1,column=0,sticky="w", padx=5, pady=5)
+        self.stat1 = Label(self.status_frame, text = "Disconnected", borderwidth=2, background = "red", font = ("Arial", 15))
+        self.stat1.grid(row=1,column=0,sticky="w", padx=5, pady=5)
         
-        status_frame.grid(row=row,column=column, sticky="news")
+        self.status_frame.grid(row=row,column=column, sticky="news")
         
         return
+    
+    def connect(self):
+        self.stat1.config(text="  Connected  ", background = "green")
+        
+    def disconnect(self):
+        self.stat1.config(text="Disconnected", background = "red")
+        
+    def update(self, state):
+        # Update state only the state change occurs
+        # Connected : state = non-zero real number 
+        # Disconnected : state = 0 
+        
+        if (self.prev_state != state):
+            if (state != 0):
+                self.connect()
+            else:
+                self.disconnect()
+            self.prev_state = state
