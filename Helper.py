@@ -45,7 +45,37 @@ class graph_2D:
         new_y = np.r_[old_y[1:], y]
         self.line.set_ydata(new_y)
         return self.line,
+
+class Gps_Graph_2D:
+    def __init__(self, master, location, color, mode=False):
+        self.mode = mode
+        self.data = 0
+        (row,column) = location
+        self.color = color
+            
+        state = Label(master, text = str(mode) + " : ", borderwidth=4, foreground =color, font = ("Arial", 15))
+        state.grid(row=row,column=0,sticky="w")
     
+        self.var = Label(master, text = "0", borderwidth=4, font = ("Arial", 15))
+        self.var.grid(row=row,column=0,sticky="e")
+
+        self.fig = plt.figure(figsize=(3,3))
+
+        self.ax = plt.subplot(111, xlim=(-100, 100), ylim=(-100, 100))
+        #self.sc = self.ax.scatter(0,0)
+        #self.line, = self.ax.plot(np.arange(50), np.ones(50, dtype=np.float)*np.nan, lw=1, c=color,ms=1)
+
+        canvas = FigureCanvasTkAgg(self.fig, master=master)
+        canvas.get_tk_widget().grid(row=row+1, column=0)
+        
+    def update(self,x,y):
+        self.var.configure(text="{:.2f}".format(self.data))
+        #self.sc.set_offsets(np.c_[[x],[y]])
+        self.ax.scatter(x,y,marker='o',color='0')
+        self.fig.canvas.draw_idle()
+        #self.ax.clf()
+        return
+
 class Gps_Graph_3D:
     def __init__(self, master, location, color, mode=False):
         self.mode = mode
@@ -84,7 +114,41 @@ class Gps_Graph_3D:
         new_y = np.r_[old_y[1:], y]
         self.line.set_ydata(new_y)
         return self.line,
+
+class Time_Graph:
+    def __init__(self, master, location, limit, color, mode=False):
+        self.mode = mode
+        self.data = 0
+        (row,column) = location
+        self.color = color
+            
+        state = Label(master, text = str(mode) + " : ", borderwidth=4, foreground =color, font = ("Arial", 15))
+        state.grid(row=row,column=0,sticky="w")
+        
+        self.var = Label(master, text = "0", borderwidth=4, font = ("Arial", 15))
+        self.var.grid(row=row,column=0,sticky="e")
+
+        self.fig = plt.figure(figsize=(3,2))
+        
+        (xlimit, ylimit) = limit
+        self.ax = plt.subplot(111, xlim=(0, xlimit), ylim=(0, ylimit))
+        self.line, = self.ax.plot(np.arange(50), np.ones(50, dtype=np.float)*np.nan, lw=1, c=color,ms=1)
+
+        canvas = FigureCanvasTkAgg(self.fig, master=master)
+        canvas.get_tk_widget().grid(row=row+1, column=0)
     
+    def init_line(self):
+        return self.line
+        
+    def animate(self,i):
+        y = self.data
+        self.var.configure(text="{:.2f}".format(self.data))
+        
+        old_y = self.line.get_ydata()
+        new_y = np.r_[old_y[1:], y]
+        self.line.set_ydata(new_y)
+        return self.line,
+
 class Var:
     def __init__(self, root, location, name = 'Var', color='black'):
         (row,column) = location

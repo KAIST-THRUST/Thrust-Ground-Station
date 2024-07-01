@@ -1,30 +1,32 @@
 from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
-import tkinter.font
 
-from threading import Thread
 from serial.tools import list_ports
 import serial
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-from time import ctime 
-from time import time
-from time import sleep
 
 from matplotlib import animation
 
 from Gyro import Gyro_3D
-from Time_Graph import Time_Graph
+from Helper import Time_Graph
 from Helper import Status
 from Helper import Var
-from Helper import Gps_Graph_3D
-from Helper import graph_2D
+from Helper import Gps_Graph_2D
+#from Helper import Gps_Graph_3D
+#from Helper import graph_2D
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from pyquaternion import Quaternion
-                                
+
+### Hyper Parameter ###
+### Change this parameter according to your personalization setting
+update_time = 80    # Receive data & update ground station period (ms)
+com = 'COM9'        # Port
+Serial_rate = 9600  # Serial Rate
+data_length = 15    # Number of serial data : [Transceiver, x, y, z, u, Yaw, Pitch, Roll, Altitude, Pressure, Temperature, Servo, Voltage, SD,GPS]
+debug = 0           # Change this 1 to show debug print
+### =============== ###      
                                                                                                                                                                                                                                                                       
 # make program with tkinter
 root = Tk()
@@ -141,12 +143,11 @@ Time_var = Var(frame3, (7,0),'Time','black')
 frame4 = tk.Frame(root, relief="solid",bd = 3)
 frame4.grid(row=1, column=3, sticky='news')
 
-# 3D GPS
-#Gps = Gps_Graph(frame4, (0,0), "black", "Gps")
-#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
+# 2D GPS
+Gps = Gps_Graph_2D(frame4, (0,0), "black", "Gps")
+#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, frames=100, interval=50, blit=False)
 
-#Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
-#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
+# 3D GPS
 #Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
 #Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, init_func= Gps.init_line ,frames=100, interval=50, blit=False)
 
@@ -163,23 +164,22 @@ cnt = 0
 test = 0
 def loop():
     ### Read Data from Serial ###
-    ### Serial Data : String, ex) "123.0,242.2,25.3"
-    #raw_data = ser.readline() 
-    #data = raw_data.decode('utf-8').split(',')
-    
-    # Test
-    data = ['0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0'] # Fake data
+    # Serial Data : String, ex) "123.0,242.2,25.3"   
+    raw_data = ser.readline() 
+    data = raw_data.decode('utf-8').split(',')
+    # Test Data
+    # data = ['0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0'] # Fake data
     # [Transceiver, x, y, z, u, Yaw, Pitch, Roll, Altitude, Pressure, Temperature, Servo, Voltage, SD,GPS]
     trans,x,y,z,u,yaw,pitch,roll,alt,p,temp,servo,volt,sd,gps = list(map(float, data))
 
     global cnt
     global test
-    cnt = cnt + 0.01*np.pi
-    data_length = 15
+    cnt = cnt + 1
+    
     if (len(data) == data_length):
         ### Parser ###
         data[data_length-1] = data[data_length-1][:-2]
-        quaternion = [x + cnt,y,z, u]
+        quaternion = [x,y,z,u]
         
         # Update Gyro 3D graph
         gyro3D.Quat = quaternion
@@ -207,13 +207,16 @@ def loop():
         Temp_var.update()
         Time_var.data = cnt
         Time_var.update()
-        
+
         if (cnt % 30 == 0):
             # Test variable 
             # use this variable to test the status!
             # Also You should remove this when you actually use it
             test = (int(test)+1)%2
-            #Gps.ax.scatter(cnt*0.5,cnt*0.2,cnt,marker='o',color='0')
+            
+            # Change here to gps data
+            Gps.data = cnt
+            Gps.update(cnt,cnt)
             
         Servo_stat.update(servo)
         Voltage_stat.update(volt)
@@ -224,19 +227,19 @@ def loop():
         SD_stat.update(sd)
         Pressure_stat.update(p)
     
-    root.after(80,loop)
+    root.after(update_time,loop)
 
 if __name__ == '__main__': # start program
-    """
     ports = list_ports.comports()
-    for port in ports:
-        print(port)
+    
+    if debug:
+        for port in ports:
+            print(port)
 
-    ser = serial.Serial('COM9',9600)
-    """
-    val = root.after(80,loop)
-    #thread = Thread(target=loop)
-    #thread.start()
+    ser = serial.Serial(com,Serial_rate)
+    
+    # Receive data and update GS in 'update_time' ms
+    val = root.after(update_time,loop)
     
     while True: # Only exits, because update cannot be used on a destroyed application
         root.update()

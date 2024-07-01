@@ -98,13 +98,13 @@ class Gyro_3D:
         #print(len(self.get_quaternion_from_euler(data[0],data[1],data[2])))
         
         data = self.Quat
-        #q = Quaternion(array=data)
+        q = Quaternion(array=data)
         
         
         #data[0] = (data[0] / 360) * 2 * np.pi 
         #data[1] = (data[1] / 360) * 2 * np.pi 
         #data[2] = (data[2] / 360) * 2 * np.pi 
-        q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
+        #q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
         
         for line, start, end in zip(self.lines, self.startpoints, self.endpoints):
             #end *= 5
