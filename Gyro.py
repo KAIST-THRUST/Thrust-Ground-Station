@@ -15,11 +15,11 @@ class Gyro_3D:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        #ax.axis('off')
 
         self.Quat = [0,0,0,0]
         # use a different color for each axis
         colors = ['r', 'g', 'b']
+        
         # set up lines and points
         self.lines = sum([ax.plot([], [], [], c=c)
                     for c in colors], [])
@@ -37,7 +37,6 @@ class Gyro_3D:
 
         #canvas = FigureCanvasTkAgg(self.fig, master=master)
         #canvas.get_tk_widget().grid(row=1, column=0)
-
         return
     
     def init(self):
@@ -81,37 +80,23 @@ class Gyro_3D:
     ### animation function ###
     def animate(self, i):
         # we'll step two time-steps per frame.  This leads to nice results.
-        #i = (2 * i) % x_t.shape[1]
         
+        # Test data in library
         #q = next(quaternion_generator)
-        
         #q = Quaternion(axis=[0.0,0.0,1.0], radians=0.1*data[0]*np.pi)
-        
-        #print("here : :: ", Quat)
-        #print(ctime(time()))
-        #data[0] += 0.01*np.pi
-        #data[1] = 0 #0.01*np.pi #np.random.uniform(0,2)*np.pi
-        #data[2] = np.pi#np.random.uniform(0,2)*np.pi
-        
-        
-        
-        #print(len(self.get_quaternion_from_euler(data[0],data[1],data[2])))
-        
+
         data = self.Quat
         q = Quaternion(array=data)
         
-        
+        # Euler test data
         #data[0] = (data[0] / 360) * 2 * np.pi 
         #data[1] = (data[1] / 360) * 2 * np.pi 
         #data[2] = (data[2] / 360) * 2 * np.pi 
         #q = Quaternion(array=self.get_quaternion_from_euler(data[0],data[1],data[2]))
         
         for line, start, end in zip(self.lines, self.startpoints, self.endpoints):
-            #end *= 5
-            #print(start,end)
             start = q.rotate(start)
             end = q.rotate(end)
-            #print(start,end)
             line.set_data(np.array([start[0], end[0]]), np.array([start[1], end[1]]))
             line.set_3d_properties([start[2], end[2]])
 

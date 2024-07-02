@@ -28,12 +28,8 @@ void loop(){
 
     while(HC12.available()){
       String input = HC12.readStringUntil('\n');
-
-
-      //Serial.println(input);
-
+      /*
       boundLow = input.indexOf(delimiter);
-      //Serial.println(boundLow);
       sensorData1 = (input.substring(0,boundLow).toFloat()/1000);
 
       boundHigh = input.indexOf(delimiter,boundLow+1);
@@ -45,8 +41,6 @@ void loop(){
       boundHigh2 = input.indexOf(delimiter,boundLow2+1);
       sensorData4 = (input.substring(boundLow2+1,boundHigh2).toFloat()/1000);
 
-
-
       Serial.print(sensorData1);
       Serial.print(",");
       Serial.print(sensorData2);
@@ -54,7 +48,8 @@ void loop(){
       Serial.print(sensorData3);
       Serial.print(",");
       Serial.println(sensorData4);
-
+      */
+      Serial.println(input);
 
     }
     delay(160);

@@ -1,3 +1,7 @@
+## GS.py
+## main file of the ground station
+## 
+
 from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
@@ -19,7 +23,7 @@ from Helper import Gps_Graph_2D
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-### Hyper Parameter ###
+### Hyper Parameter 
 ### Change this parameter according to your personalization setting
 update_time = 80    # Receive data & update ground station period (ms)
 com = 'COM9'        # Port
@@ -27,6 +31,7 @@ Serial_rate = 9600  # Serial Rate
 data_length = 15    # Number of serial data : [Transceiver, x, y, z, u, Yaw, Pitch, Roll, Altitude, Pressure, Temperature, Servo, Voltage, SD,GPS]
 debug = 0           # Change this 1 to show debug print
 ### =============== ###      
+                                    
                                                                                                                                                                                                                                                                       
 # make program with tkinter
 root = Tk()
@@ -145,7 +150,6 @@ frame4.grid(row=1, column=3, sticky='news')
 
 # 2D GPS
 Gps = Gps_Graph_2D(frame4, (0,0), "black", "Gps")
-#Gps_anim = animation.FuncAnimation(Gps.fig, Gps.animate, frames=100, interval=50, blit=False)
 
 # 3D GPS
 #Gps = Gps_Graph_3D(frame4, (0,0), "black", "Gps")
@@ -164,9 +168,11 @@ cnt = 0
 test = 0
 def loop():
     ### Read Data from Serial ###
-    # Serial Data : String, ex) "123.0,242.2,25.3"   
+    # Serial Data : String, ex) "123.0*242.2*25.3"   
     raw_data = ser.readline() 
-    data = raw_data.decode('utf-8').split(',')
+    data = raw_data.decode('utf-8').split('*')
+    data[data_length-1] = data[data_length-1][:-2]
+    
     # Test Data
     # data = ['0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0'] # Fake data
     # [Transceiver, x, y, z, u, Yaw, Pitch, Roll, Altitude, Pressure, Temperature, Servo, Voltage, SD,GPS]
@@ -178,7 +184,6 @@ def loop():
     
     if (len(data) == data_length):
         ### Parser ###
-        data[data_length-1] = data[data_length-1][:-2]
         quaternion = [x,y,z,u]
         
         # Update Gyro 3D graph
