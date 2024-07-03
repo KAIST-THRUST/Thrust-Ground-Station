@@ -1,6 +1,6 @@
 ## GS.py
 ## main file of the ground station
-## 
+## Check requirements.txt before execute
 
 from tkinter import *
 from tkinter.ttk import *
