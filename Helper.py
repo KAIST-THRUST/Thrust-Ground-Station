@@ -204,3 +204,13 @@ class Status:
             else:
                 self.disconnect()
             self.prev_state = state
+            
+class Button:
+    def __init__(self,root, location, serial):
+        self.serial = serial
+        (row,column) = location
+        Launch_button = tk.Button(root, text='Launch', relief='solid',bg = 'red', fg='white', font = ("Arial", 15),command=self.click)
+        Launch_button.grid(row=row, column=column, sticky='news')
+    
+    def click(self):
+        self.serial.write("1")

@@ -18,6 +18,7 @@ from Helper import Time_Graph
 from Helper import Status
 from Helper import Var
 from Helper import Gps_Graph_2D
+from Helper import Button
 #from Helper import Gps_Graph_3D
 #from Helper import graph_2D
 
@@ -32,7 +33,14 @@ data_length = 15    # Number of serial data : [Transceiver, x, y, z, u, Yaw, Pit
 debug = 0           # Change this 1 to show debug print
 ### =============== ###      
                                     
-                                                                                                                                                                                                                                                                      
+ports = list_ports.comports()
+    
+if debug:
+    for port in ports:
+        print(port)
+
+ser = serial.Serial(com,Serial_rate)
+                                                                                                                                                                                                                                                       
 # make program with tkinter
 root = Tk()
 root.title("THRUST-Ground Station") # set title
@@ -148,6 +156,12 @@ Time_var = Var(frame3, (7,0),'Time','black')
 frame4 = tk.Frame(root, relief="solid",bd = 3)
 frame4.grid(row=1, column=3, sticky='news')
 
+frame4.rowconfigure(0,weight=1)
+frame4.rowconfigure(1,weight=1)
+frame4.rowconfigure(2,weight=1)
+frame4.rowconfigure(3,weight=1)
+frame4.rowconfigure(4,weight=1)
+
 # 2D GPS
 Gps = Gps_Graph_2D(frame4, (0,0), "black", "Gps")
 
@@ -157,6 +171,8 @@ Gps = Gps_Graph_2D(frame4, (0,0), "black", "Gps")
 
 Altitude = Time_Graph(frame4, (2,0), (50,100), "black", "Altitude")
 Altitude_anim = animation.FuncAnimation(Altitude.fig, Altitude.animate, init_func= Altitude.init_line ,frames=100, interval=50, blit=False)
+
+Launch_button = Button(frame4, (4,0), ser)
 #-------------#
 
 ### Bottom frame ###
@@ -169,12 +185,12 @@ test = 0
 def loop():
     ### Read Data from Serial ###
     # Serial Data : String, ex) "123.0*242.2*25.3"   
-    raw_data = ser.readline() 
-    data = raw_data.decode('utf-8').split('*')
-    data[data_length-1] = data[data_length-1][:-2]
+    #raw_data = ser.readline() 
+    #data = raw_data.decode('utf-8').split('*')
+    #data[data_length-1] = data[data_length-1][:-2]
     
     # Test Data
-    # data = ['0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0'] # Fake data
+    data = ['0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0','0.0'] # Fake data
     # [Transceiver, x, y, z, u, Yaw, Pitch, Roll, Altitude, Pressure, Temperature, Servo, Voltage, SD,GPS]
     trans,x,y,z,u,yaw,pitch,roll,alt,p,temp,servo,volt,sd,gps = list(map(float, data))
 
@@ -234,15 +250,7 @@ def loop():
     
     root.after(update_time,loop)
 
-if __name__ == '__main__': # start program
-    ports = list_ports.comports()
-    
-    if debug:
-        for port in ports:
-            print(port)
-
-    ser = serial.Serial(com,Serial_rate)
-    
+if __name__ == '__main__': # start program    
     # Receive data and update GS in 'update_time' ms
     val = root.after(update_time,loop)
     
